@@ -1,5 +1,6 @@
 package com.group;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.group.DepComb.TIPOPOSTO;
@@ -67,7 +68,7 @@ public class DepCombTesteDeParticaoTest {
   @CsvSource({
     "0, 500, 10000, 1250, 1250",
     "-10, -1, 0, 0, 0",
-    "100, 495, 9930, 1237, 1237",
+    "100, 495, 9930, 1237, 1238",
     "100000, -3, 0, 0, 0",
   })
   public void testaEncomendaCombustivelPostoComum(int quantidadeEncomendada, int resultadoAditivo,
@@ -75,14 +76,14 @@ public class DepCombTesteDeParticaoTest {
     int[] resultadoEsperado = {resultadoAditivo, resultadoGasolina, resultadoAlcool1, resultadoAlcool2};
     DepComb depComb = new DepComb(500, 10000, 1250, 1250);
     int[] res = depComb.encomendaCombustivel(quantidadeEncomendada, TIPOPOSTO.COMUM);
-    assertEquals(resultadoEsperado, res);
+    assertArrayEquals(resultadoEsperado, res);
   }
 
   @ParameterizedTest
   @CsvSource({
     "0, 500, 10000, 1250, 1250",
     "-10, -1, 0, 0, 0",
-    "100, 495, 9930, 1237, 1237",
+    "100, 495, 9930, 1237, 1238",
     "100000, -3, 0, 0, 0",
   })
   public void testaEncomendaCombustivelPostoEstrategico(int quantidadeEncomendada, int resultadoAditivo,
@@ -90,6 +91,6 @@ public class DepCombTesteDeParticaoTest {
     int[] resultadoEsperado = {resultadoAditivo, resultadoGasolina, resultadoAlcool1, resultadoAlcool2};
     DepComb depComb = new DepComb(500, 10000, 1250, 1250);
     int[] res = depComb.encomendaCombustivel(quantidadeEncomendada, TIPOPOSTO.ESTRATEGICO);
-    assertEquals(resultadoEsperado, res);
+    assertArrayEquals(resultadoEsperado, res);
   }
 }

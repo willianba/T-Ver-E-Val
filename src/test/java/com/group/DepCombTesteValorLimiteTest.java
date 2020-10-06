@@ -1,5 +1,6 @@
 package com.group;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.group.DepComb.TIPOPOSTO;
@@ -72,7 +73,7 @@ public class DepCombTesteValorLimiteTest {
     int[] resultadoEsperado = {resultadoAditivo, resultadoGasolina, resultadoAlcool1, resultadoAlcool2};
     DepComb depComb = new DepComb(500, 10000, 1250, 1250);
     int[] res = depComb.encomendaCombustivel(quantidadeEncomendada, TIPOPOSTO.COMUM);
-    assertEquals(resultadoEsperado, res);
+    assertArrayEquals(resultadoEsperado, res);
   }
 
   @ParameterizedTest
@@ -84,6 +85,6 @@ public class DepCombTesteValorLimiteTest {
     int[] resultadoEsperado = {resultadoAditivo, resultadoGasolina, resultadoAlcool1, resultadoAlcool2};
     DepComb depComb = new DepComb(500, 10000, 1250, 1250);
     int[] res = depComb.encomendaCombustivel(quantidadeEncomendada, TIPOPOSTO.ESTRATEGICO);
-    assertEquals(resultadoEsperado, res);
+    assertArrayEquals(resultadoEsperado, res);
   }
 }
