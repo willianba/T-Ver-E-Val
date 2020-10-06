@@ -90,12 +90,7 @@ public class DepComb {
 
     int montanteAlcool = qtdade + tAlcool1 + tAlcool2;
     if (montanteAlcool < MAX_ALCOOL) {
-      if (montanteAlcool % 2 == 0) {
-        tAlcool1 = tAlcool2 = montanteAlcool / 2;
-      } else {
-        tAlcool1 = (montanteAlcool - 1) / 2;
-        tAlcool2 = (montanteAlcool + 1) / 2;
-      }
+      tAlcool1 = tAlcool2 = montanteAlcool / 2;
       defineSituacao();
       return qtdade;
     }
@@ -111,7 +106,7 @@ public class DepComb {
       int[] arranjo = {-1,0,0,0};
       return arranjo;
     }
-    if (situacao == SITUACAO.NORMAL){
+    if (situacao == SITUACAO.NORMAL) {
       if (tAditivo - (qtdade * 0.05) < 0 || tGasolina - (qtdade * 0.7) < 0 || tAlcool1 + tAlcool2 - (qtdade * 0.25) < 0) {
         int[] arranjo =  {-3,0,0,0};
         return arranjo;
@@ -119,12 +114,7 @@ public class DepComb {
       tAditivo = (int) Math.round(tAditivo - (qtdade * 0.05));
       tGasolina = (int) Math.round(tGasolina - (qtdade * 0.7));
       int montanteAlcool = (int) Math.round(tAlcool1 + tAlcool2 - (qtdade * 0.25));
-      if (montanteAlcool % 2 == 0) {
-        tAlcool1 = tAlcool2 = montanteAlcool / 2;
-      } else {
-        tAlcool1 = (montanteAlcool - 1) / 2;
-        tAlcool2 = (montanteAlcool + 1) / 2;
-      }
+      tAlcool1 = tAlcool2 = montanteAlcool / 2;
     } else if (situacao == SITUACAO.SOBRAVISO) {
       if (tipoPosto == TIPOPOSTO.COMUM) {
         qtdade = qtdade / 2;

@@ -68,7 +68,7 @@ public class DepCombTesteDeParticaoTest {
   @CsvSource({
     "0, 500, 10000, 1250, 1250",
     "-10, -1, 0, 0, 0",
-    "100, 495, 9930, 1237, 1238",
+    "100, 495, 9930, 1237, 1237",
     "100000, -3, 0, 0, 0",
   })
   public void testaEncomendaCombustivelPostoComum(int quantidadeEncomendada, int resultadoAditivo,
@@ -83,7 +83,7 @@ public class DepCombTesteDeParticaoTest {
   @CsvSource({
     "0, 500, 10000, 1250, 1250",
     "-10, -1, 0, 0, 0",
-    "100, 495, 9930, 1237, 1238",
+    "100, 495, 9930, 1237, 1237",
     "100000, -3, 0, 0, 0",
   })
   public void testaEncomendaCombustivelPostoEstrategico(int quantidadeEncomendada, int resultadoAditivo,
