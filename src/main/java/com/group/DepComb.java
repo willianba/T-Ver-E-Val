@@ -11,11 +11,6 @@ public class DepComb {
   private int tAditivo, tGasolina, tAlcool1, tAlcool2;
   private SITUACAO situacao;
 
-  public DepComb() {
-    this.tAditivo = this.tGasolina = this.tAlcool1 = this.tAlcool2 = 0;
-    defineSituacao();
-  }
-
   public DepComb(int tAditivo, int tGasolina, int tAlcool1, int tAlcool2) {
     this.tAditivo = tAditivo;
     this.tGasolina = tGasolina;
@@ -25,7 +20,7 @@ public class DepComb {
   }
 
   public void defineSituacao() {
-    if (tAditivo > 250 && tGasolina > 5000 && tAlcool1 > 625 && tAlcool2 > 625) {
+    if (tAditivo >= 250 && tGasolina >= 5000 && tAlcool1 >= 625 && tAlcool2 >= 625) {
       situacao = SITUACAO.NORMAL;
     } else if (tAditivo < 125 || tGasolina < 2500 || tAlcool1 < 313 || tAlcool2 < 313) {
       situacao = SITUACAO.EMERGENCIA;
@@ -65,7 +60,7 @@ public class DepComb {
       return qtdade;
     }
 
-      int retorno = MAX_ADITIVO - tAditivo;
+    int retorno = MAX_ADITIVO - tAditivo;
     tAditivo = MAX_ADITIVO;
     defineSituacao();
     return retorno;
