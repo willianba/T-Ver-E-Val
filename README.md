@@ -73,3 +73,12 @@ Alguns ramos não possuíram todas as condições corretas, como se pode percebe
 A técnica utilizada para a criação dos testes foi de testes parametrizados para evitar duplicação de código, onde só eram alterados os parâmetros da classe, os de entrada e os de saída. Desta forma conseguimos abranger a maior parte dos casos de teste.
 
 Referente as ferramentas, foi utilizado um *plugin* junto com o `Maven`, o `jacoco`, no qual permite acompanhar e gerar relatórios de cobertura de código da nossa classe alvo.
+
+
+## Análise do código da Classe Alvo do Grupo do Gabriel Rabelo
+
+Existem duas interpretações que difere do nosso código da Classe Alvo.
+
+- No código apresentado o métodos que recebe combustível o zero foi considerado uma entrada válida. Após alterar < 0 para <= 0 o testes começaram a ser aprovados.
+
+- Método de encomendaCombustivel() o array de retorno do erro só tem uma posição, diferente do nosso, que espera quatro valores, tanto para uma encomenda válida, quanto para um encomenda inválida. A solução foi adicionar mais três posições do array contendo valor zero em cada uma.
