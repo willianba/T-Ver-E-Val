@@ -1,14 +1,27 @@
 package com.group;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class DepComb {
-  public enum SITUACAO { NORMAL, SOBRAVISO, EMERGENCIA }
-  public enum TIPOPOSTO { COMUM, ESTRATEGICO }
+
+  public enum SITUACAO {NORMAL, SOBRAVISO, EMERGENCIA}
+
+  public enum TIPOPOSTO {COMUM, ESTRATEGICO}
 
   public static final int MAX_ADITIVO = 500;
   public static final int MAX_ALCOOL = 2500;
   public static final int MAX_GASOLINA = 10000;
+  public static final double PROPORCAO_ADITIVO = 0.05;
+  public static final double PROPORCAO_GASOLINA = 0.7;
+  public static final double PROPORCAO_ALCOOL = 0.25;
 
-  private int tAditivo, tGasolina, tAlcool1, tAlcool2;
+  private int tAditivo;
+  private int tGasolina;
+  private int tAlcool1;
+  private int tAlcool2;
+
   private SITUACAO situacao;
 
   public DepComb(int tAditivo, int tGasolina, int tAlcool1, int tAlcool2) {
@@ -20,134 +33,205 @@ public class DepComb {
   }
 
   public void defineSituacao() {
-    if (tAditivo >= 250 && tGasolina >= 5000 && tAlcool1 >= 625 && tAlcool2 >= 625) {
+    double menor = procuraMaisEscasso();
+
+    if (menor >= 0.5) {
       situacao = SITUACAO.NORMAL;
-    } else if (tAditivo < 125 || tGasolina < 2500 || tAlcool1 < 313 || tAlcool2 < 313) {
-      situacao = SITUACAO.EMERGENCIA;
-    } else {
+    } else if (menor >= 0.25) {
       situacao = SITUACAO.SOBRAVISO;
+    } else {
+      situacao = SITUACAO.EMERGENCIA;
     }
+  }
+
+  private double procuraMaisEscasso() {
+    List<Double> combustiveis = new ArrayList<>();
+    combustiveis.add((double) tAditivo / MAX_ADITIVO);
+    combustiveis.add((double) tGasolina / MAX_GASOLINA);
+    combustiveis.add((double) (tAlcool1 + tAlcool2) / MAX_ALCOOL);
+    return Collections.min(combustiveis);
   }
 
   public SITUACAO getSituacao() {
-    return this.situacao;
+    return situacao;
   }
 
-  public int getGasolina() {
-    return this.tGasolina;
+  public int gettAditivo() {
+    return tAditivo;
   }
 
-  public int getAditivo() {
-    return this.tAditivo;
+  public int gettGasolina() {
+    return tGasolina;
   }
 
-  public int getAlcool1() {
-    return this.tAlcool1;
+  public int gettAlcool1() {
+    return tAlcool1;
   }
 
-  public int getAlcool2() {
-    return this.tAlcool2;
+  public int gettAlcool2() {
+    return tAlcool2;
   }
 
   public int recebeAditivo(int qtdade) {
+    int val = -1;
     if (qtdade <= 0) {
-      return -1;
+      return val;
     }
 
-    if (tAditivo + qtdade <= MAX_ADITIVO) {
-      tAditivo = (tAditivo + qtdade);
-      defineSituacao();
-      return qtdade;
+    if (qtdade + tAditivo <= MAX_ADITIVO) {
+      tAditivo += qtdade;
+      val = qtdade;
+    } else {
+      int aditivoOld = tAditivo;
+      tAditivo = MAX_ADITIVO;
+      val = MAX_ADITIVO - aditivoOld;
     }
-
-    int retorno = MAX_ADITIVO - tAditivo;
-    tAditivo = MAX_ADITIVO;
     defineSituacao();
-    return retorno;
+    return val;
   }
 
   public int recebeGasolina(int qtdade) {
+    int val = -1;
     if (qtdade <= 0) {
-      return -1;
+      return val;
     }
 
-    if (tGasolina + qtdade < MAX_GASOLINA) {
-      tGasolina = (tGasolina + qtdade);
-      defineSituacao();
-      return qtdade;
+    if (qtdade + tGasolina <= MAX_GASOLINA) {
+      tGasolina += qtdade;
+      val = qtdade;
+    } else {
+      int tGasolinaOld = tGasolina;
+      tGasolina = MAX_GASOLINA;
+      val = MAX_GASOLINA - tGasolinaOld;
     }
-
-    int retorno = MAX_GASOLINA - tGasolina;
-    tGasolina = MAX_GASOLINA;
     defineSituacao();
-    return retorno;
+    return val;
   }
 
   public int recebeAlcool(int qtdade) {
+    int val = -1;
     if (qtdade <= 0) {
-      return -1;
+      return val;
     }
 
-    int montanteAlcool = qtdade + tAlcool1 + tAlcool2;
-    if (montanteAlcool < MAX_ALCOOL) {
-      tAlcool1 = tAlcool2 = montanteAlcool / 2;
-      defineSituacao();
-      return qtdade;
+    int tAlcool = tAlcool1 + tAlcool2;
+    if (qtdade + tAlcool <= MAX_ALCOOL) {
+      tAlcool1 += (double) qtdade / 2;
+      tAlcool2 += (double) qtdade / 2;
+      val = qtdade;
+    } else {
+      int tAlcoolold = tAlcool1 + tAlcool2;
+      tAlcool1 = MAX_ALCOOL;
+      tAlcool2 = MAX_ALCOOL;
+      val = MAX_ALCOOL - tAlcoolold;
     }
-
-    int retorno = MAX_ALCOOL - tAlcool1 - tAlcool2;
-    tAlcool1 = tAlcool2 = MAX_ALCOOL / 2;
-    defineSituacao();
-    return retorno;
+    return val;
   }
 
   public int[] encomendaCombustivel(int qtdade, TIPOPOSTO tipoPosto) {
+    int[] erro = new int[4];
+    int[] remanescente = new int[4];
+
+    double qtdadeAditivo = qtdade * PROPORCAO_ADITIVO;
+    double qtdadeGasolina = qtdade * PROPORCAO_GASOLINA;
+    double qtdadeAlcool = qtdade * PROPORCAO_ALCOOL;
+
     if (qtdade < 0) {
-      int[] arranjo = {-1,0,0,0};
-      return arranjo;
+      erro[0] = -1;
+      erro[1] = 0;
+      erro[2] = 0;
+      erro[3] = 0;
+      return erro;
     }
+
     if (situacao == SITUACAO.NORMAL) {
-      if (tAditivo - (qtdade * 0.05) < 0 || tGasolina - (qtdade * 0.7) < 0 || tAlcool1 + tAlcool2 - (qtdade * 0.25) < 0) {
-        int[] arranjo =  {-3,0,0,0};
-        return arranjo;
+      if (verificaGasolina(qtdadeGasolina) && verificaAlcool(qtdadeAlcool) && verificaAditivo(qtdadeAditivo)) {
+        tAditivo -= qtdadeAditivo;
+        tGasolina -= qtdadeGasolina;
+        tAlcool1 -= qtdadeAlcool / 2;
+        tAlcool2 -= qtdadeAlcool / 2;
+        remanescente[0] = tAditivo;
+        remanescente[1] = tGasolina;
+        remanescente[2] = tAlcool1;
+        remanescente[3] = tAlcool2;
+
+        defineSituacao();
+        return remanescente;
+      } else {
+        erro[0] = -3;
+        erro[1] = 0;
+        erro[2] = 0;
+        erro[3] = 0;
+        return erro;
       }
-      tAditivo = (int) Math.floor(tAditivo - (qtdade * 0.05));
-      tGasolina = (int) Math.floor(tGasolina - (qtdade * 0.7));
-      int montanteAlcool = (int) Math.floor(tAlcool1 + tAlcool2 - (qtdade * 0.25));
-      tAlcool1 = tAlcool2 = montanteAlcool / 2;
     } else if (situacao == SITUACAO.SOBRAVISO) {
       if (tipoPosto == TIPOPOSTO.COMUM) {
-        qtdade = qtdade / 2;
-      }
-      if (tAditivo - (qtdade * 0.05) < 0 || tGasolina - (qtdade * 0.7) < 0 || tAlcool1 + tAlcool2 - (qtdade * 0.25) < 0) {
-        int[] arranjo =  {-3,0,0,0};
-        return arranjo;
-      }
-      tAditivo = (int) Math.floor(tAditivo - (qtdade * 0.05));
-      tGasolina = (int) Math.floor(tGasolina - (qtdade * 0.7));
-      int montanteAlcool = (int) Math.floor(tAlcool1 + tAlcool2 - (qtdade * 0.25));
-      tAlcool1 = tAlcool2 = montanteAlcool / 2;
-    } else {
-      if (tipoPosto == TIPOPOSTO.COMUM) {
-        int[] arranjo = {-2,0,0,0};
-        return arranjo;
+        qtdadeAditivo = qtdadeAditivo / 2;
+        qtdadeGasolina = qtdadeGasolina / 2;
+        qtdadeAlcool = qtdadeAlcool / 2;
       }
 
-      if (tGasolina - (qtdade * 0.7) < 0 || tAlcool1 + tAlcool2 - (qtdade * 0.25) < 0) {
-        int[] arranjo =  {-3,0,0,0};
-        return arranjo;
-      }
+      if (verificaGasolina(qtdadeGasolina) && verificaAlcool(qtdadeAlcool) && verificaAditivo(qtdadeAditivo)) {
+        tAditivo -= qtdadeAditivo;
+        tGasolina -= qtdadeGasolina;
+        tAlcool1 -= qtdadeAlcool / 2;
+        tAlcool2 -= qtdadeAlcool / 2;
+        remanescente[0] = tAditivo;
+        remanescente[1] = tGasolina;
+        remanescente[2] = tAlcool1;
+        remanescente[3] = tAlcool2;
 
-      if (tAditivo > qtdade * 0.05) {
-        tAditivo = (int) Math.floor(tAditivo - (qtdade * 0.05));
+        defineSituacao();
+        return remanescente;
       } else {
-        tGasolina = (int) Math.floor(tGasolina - (qtdade * 0.7));
-        int montanteAlcool = (int) Math.floor(tAlcool1 + tAlcool2 - (qtdade * 0.25));
-        tAlcool1 = tAlcool2 = montanteAlcool / 2;
+        erro[0] = -3;
+        erro[1] = 0;
+        erro[2] = 0;
+        erro[3] = 0;
+        return erro;
       }
     }
-    defineSituacao();
-    int[] arranjo = {tAditivo, tGasolina, tAlcool1, tAlcool2};
-    return arranjo;
+
+    if (tipoPosto == TIPOPOSTO.COMUM) {
+      erro[0] = -2;
+      erro[1] = 0;
+      erro[2] = 0;
+      erro[3] = 0;
+        return erro;
+      } else {
+        if (verificaGasolina(qtdadeGasolina) && verificaAlcool(qtdadeAlcool)) {
+          if (verificaAditivo(qtdadeAditivo)) {
+            tAditivo -= qtdadeAditivo;
+          }
+          tGasolina -= qtdadeGasolina;
+          tAlcool1 -= qtdadeAlcool / 2;
+          tAlcool2 -= qtdadeAlcool / 2;
+          remanescente[0] = tAditivo;
+          remanescente[1] = tGasolina;
+          remanescente[2] = tAlcool1;
+          remanescente[3] = tAlcool2;
+
+          defineSituacao();
+          return remanescente;
+        } else {
+          erro[0] = -3;
+          erro[1] = 0;
+          erro[2] = 0;
+          erro[3] = 0;
+          return erro;
+        }
+      }
+  }
+
+  private boolean verificaGasolina(double qtdadeGasolina) {
+    return tGasolina - qtdadeGasolina >= 0;
+  }
+
+  private boolean verificaAlcool(double qtdadeAlcool) {
+    return (tAlcool1 + tAlcool2) - qtdadeAlcool >= 0;
+  }
+
+  private boolean verificaAditivo(double qtdadeAditivo) {
+    return this.tAditivo - qtdadeAditivo >= 0;
   }
 }
