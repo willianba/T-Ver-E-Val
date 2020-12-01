@@ -6,61 +6,66 @@
 
 ---
 
-## Relatório 
-O presente documento tem por objetivo aplicar as Técnicas e Ferramentas apresentadas em aula no trabalho proposto na disciplina de Verificação e Validação de Software I.
+## Relatório dos Casos de Teste
+
+O presente documento tem por objetivo apresentar as Técnicas de Geração de Casos de Teste aplicadas para o desenvolvimento dos testes do trabalho proposto na disciplina de Verificação e Validação de Software I.
 
 ## Enunciado do problema
 
-O enunciado do problema consiste em identificar os casos de teste possíveis para um sistema de vendas que possuí algumas classes alvos. As classes contêm regras de negócios onde possuem métodos que deverão ser validadas com as técnicas de testes.
+O problema do enunciado consiste identificar os casos de teste possíveis para a distribuição de combustível armazenados em quatro tanques que estão divididos em álcool, gasolina e aditivo. O tanque encontra-se em uma ilha, onde existem dois tipos de postos de combustível, o COMUM e o ESTRATÉGICO.
 
-## Estrutura das classes
+Dentre a distribuição existem algumas regras que é onde deve ser feito uma análise e previsão de distribuição para que não falte combustível nos tanques. O importante é o posto ESTRATÉGICO tenha prioridade sobre o posto COMUM.
 
-A estrutura de classe pode ser dividida em três classes principais:
+## Estrutura da classe
 
-- ServicoDeVendas: classe central que implementa as interfaces Estoque e Produtos;
-- FactoryValidacao: implementada pelas classes ValidacaoForaHorarioComercial e ValidacaoHorarioComercial;
-- Interface RegraImposto: implementada pelas classes RegraImpostoComprasGrandes RegraImpostoOriginal.
+A estrutura de classe pode ser dividida em três tipos de funções:
+
+- SITUAÇÃO – é responsável para definir a situação dos tanques que por sua vez pode estar em uma das três situações possíveis (NORMAL, SOBRAVISO, EMERGENCIA).
+- RECEBE – são funções de carregamento do tanque
+- ENCOMENDA – responsável por fazer a entrega dos combustíveis no posto e retornar a situação atual do tanque, onde acima de 50% está em estado NORMAL, abaixo de 50% até 25% encontra-se em estado SOBRAVISO e abaixo de 25% esta em estado de EMERGENCIA.
 
 ## Testes
 
-Neste trabalho não foi construído os Casos de Testes. Porém para cada caso foi utilizado técnicas diferentes e foi construído direto nos drivers.
+Para realizar os Casos de Testes foi construído três tabelas no Excel com os Teste de Partição, Testes de Valor Limite e Teste Estrutural. Todos os testes foram feitos parametrizados.
 
-Os próximos itens deste relatório apresentarão as técnicas aplicadas em cada classe
-Ex.: Classe: método().
+## Testes de Partição
 
-### Teste unitário
- - ServicoDeVendas: todos os métodos da classe;
-- ValidacaoForaHorarioComercial:  validaTresProdutosExistentes();
-- ValidacaoHorarioComercial: validaTresProdutosExistentes().
+> Células azuis = Testes implementados
+![teste_particao](img/teste_particao.png)
 
-### Teste parametrizado
-- FactoryValidacaoTest: retornaValidacao();
-- RegraImpostoComprasGrandes: calculaDezPorcento();
-- RegraImpostoOriginal: calculaDezPorcento();
-- ValidacaoForaHorarioComercial: validaExcecoes();
-- ValidacaoHorarioComercial: validaExcecoes().
+## Testes de Valor Limite
 
-## Ferramentas
-### Mockito 
-- ServicoDeVendasTest: todos os métodos da classe;
-- ValidacaoForaHorarioComercial: todos os métodos da classe;
-- ValidacaoHorarioComercial: todos os métodos da classe.
+> Células azuis = Testes implementados
+> Células amarelas = Testes repetidos
+![teste_limite](img/teste_limite.png)
 
-### Sonarcloud
-IMAGE
+## Testes Estruturais
+
+> Todos testes foram implementados
+![teste_estrutural](img/teste_estrutural.png)
+
+## Defeitos encontrados
+
+- Lógicas com `<` e `<=` na verificação dos valores de entrada do construtor e dos combustíveis;
+- Arredondamentos dos dois tanques de álcool;
+- Caso de entrega 100% para postos estratégicos mesmo em situação de sobreaviso e emergencial.
 
 ## Cobertura de código
 
-A imagem acima, no item Sonarcloud, mostra um resultado final de 95% de coverage. Este resultado se dá devido ao fato de não ter sido realizado os testes dos gettes e setters das classes.
+A imagem abaixo mostra o coverage final após a implementação de todos os testes unitários.
+
+![coverage](img/coverage.png)
+
+## Casos de testes adicionais para cobertura de blocos de decisão
+
+Primeira vez que a função `encomendaCombustivel()` foi executada obtivemos uma cobertura de aproximadamente 50%. Após alterações na função alcançamos uma cobertura de 90%.
+
+![coverage_classe](img/coverage_classe.png)
+
+Alguns ramos não possuíram todas as condições corretas, como se pode perceber na imagem. Com isso, alguns pedaços do código também não foram executados.
 
 ## Análise das técnicas e ferramentas utilizadas
 
-Para inferir a opinião do grupo, será necessário expor o que foi feito para gerar os testes do trabalho proposto. Segue abaixo:
-- Remoção de visibilidade publica dos testes, porque o Junit 5 já abrange isso
-- Remoção do código duplicado das classes de validação -> implementado o padrão de Form Template Method (https://refactoring.guru/form-template-method)
-- Trocamos as chamadas de métodos explicitas nos lambdas por inferência de métodos;
-- Implementação do Sonarcloud: https://sonarcloud.io/dashboard?id=matheustosin_TF-Ver-E-Val
-Referente as outras ferramentas, foi utilizado, como o padrão do T1 das disciplina, um *plugin* junto com o `Maven`, o `jacoco`, no qual permite acompanhar e gerar relatórios de cobertura de código da nossa classe alvo.
+A técnica utilizada para a criação dos testes foi de testes parametrizados para evitar duplicação de código, onde só eram alterados os parâmetros da classe, os de entrada e os de saída. Desta forma conseguimos abranger a maior parte dos casos de teste.
 
-No geral, com base de que cada conjunto de classes usamos técnicas diferentes, podemos concluir que conseguimos cobrir 100% da aplicação onde foram realizados os testes unitários. Usamos Junit 5, Mockito e exploramos alguns testes parametrizados onde vimos que seria possível aplicar, atendendo as expectativas do esperado.
-Referente ao Sonarcloud, se trata de uma ferramenta muito boa pra análise estática de código, porém o único contraponto é que não suporta análise automática com Java. Então a gente precisou rodar um comando no Maven sempre que queríamos realizar um Scan. 
+Referente as ferramentas, foi utilizado um *plugin* junto com o `Maven`, o `jacoco`, no qual permite acompanhar e gerar relatórios de cobertura de código da nossa classe alvo.
